@@ -4,44 +4,49 @@
             [ajax.core :as ajax]
             [day8.re-frame.http-fx]
             [cljs.spec.alpha :as s]
-            [stocksim.spec :as v]))
+            [stocksim.spec :as v]
+            [clojure.string :as str]))
 
 (rf/reg-event-db
  ::initialize-db
  (fn  [_ _]
    db/default-db))
 
-#_(rf/reg-event-db
-   ::search
-   (fn [db [_ search]]
-     (println (str "foo: " search))
-     (assoc db :search-symbol search)))
-
 (rf/reg-event-fx
  ::search
  (fn
    [{db :db} [_ search]]
-   {:http-xhrio {:method          :get
-                 :uri             (str "https://cors-anywhere.herokuapp.com/http://data.benzinga.com/rest/richquoteDelayed?symbols=" search)
-                 :format          (ajax/json-request-format)
-                 :response-format (ajax/json-response-format {:keywords? true})
-                 :on-success      [:process-response]
-                 :on-failure      [:bad-response]}
-    :db  (assoc db :search-symbol search)}))
+   (let [search (str/upper-case search)]
+     {:http-xhrio {:method          :get
+                   :uri             (str "https://cors-anywhere.herokuapp.com/http://data.benzinga.com/rest/richquoteDelayed?symbols=" search)
+                   :format          (ajax/json-request-format)
+                   :response-format (ajax/json-response-format {:keywords? true})
+                   :on-success      [:process-response]
+                   :on-failure      [:bad-response]}
+      :db (assoc db
+                 :search-symbol search
+                 :error nil
+                 :searching? true)})))
 
 (rf/reg-event-db
  :process-response
  (fn
    [db [_ {response (keyword (:search-symbol db))}]]
    (if (s/valid? ::v/quote response)
-     (-> db
-         (assoc :error? false)
-         (assoc :quote response))
-     (assoc db :error? true))))
+     (assoc db
+            :error nil
+            :quote response
+            :searching? false)
+     (assoc db
+            :error :not-found
+            :quote nil
+            :searching? false))))
 
 
 (rf/reg-event-db
  :bad-response
- (fn [db [_ _]]
-   (println "Error contacting server.")
-   (assoc db :error? true )))
+ (fn [db [_ response]]
+   (assoc db
+          :error (:last-error-code response)
+          :quote nil
+          :searching? false)))

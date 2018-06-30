@@ -4,4 +4,5 @@
   {:search-symbol ""
    :quote {}
    :error? false
-   :data {}})
+   :data {}
+   :searching? false})

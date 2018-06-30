@@ -4,8 +4,8 @@
             [stocksim.events :as events]
             [stocksim.views :as views]
             [stocksim.config :as config]
-            [stocksim.spec :as s]
-            ))
+            [stocksim.spec :as spec]
+            [com.rpl.specter :as s]))
 
 
 (defn dev-setup []
@@ -22,3 +22,6 @@
   (re-frame/dispatch-sync [::events/initialize-db])
   (dev-setup)
   (mount-root))
+
+#_
+(s/select [s/MAP-VALS s/ALL] {:foo [1 2] :bar [3 4]})

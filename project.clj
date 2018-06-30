@@ -8,7 +8,8 @@
                  [yogthos/config "0.8"]
                  [day8.re-frame/http-fx "0.1.5"]
                  [cljs-ajax "0.7.3"]
-                 [ring "1.4.0"]]
+                 [ring "1.4.0"]
+                 [com.rpl/specter "1.1.0"]]
 
   :plugins [[lein-cljsbuild "1.1.5"]]
 
@@ -29,9 +30,9 @@
                    [figwheel-sidecar "0.5.13"]
                    [day8.re-frame/trace "0.1.21"]
                    [com.cemerick/piggieback "0.2.2"]
-                   [binaryage/dirac "1.2.29"]]
+                   [binaryage/dirac "1.2.35"]]
 
-    :plugins      [[lein-figwheel "0.5.13"]]}
+    :plugins      [[lein-figwheel "0.5.16"]]}
    :repl
    {:repl-options {:port             8230
                    :nrepl-middleware [dirac.nrepl/middleware]

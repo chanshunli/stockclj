@@ -7,6 +7,16 @@
    (:search-symbol db)))
 
 (re-frame/reg-sub
+ ::searching?
+ (fn [db]
+   (:searching? db)))
+
+(re-frame/reg-sub
+ ::error
+ (fn [db]
+   (:error db)))
+
+(re-frame/reg-sub
  ::quote
  (fn [db]
    (:quote db)))
