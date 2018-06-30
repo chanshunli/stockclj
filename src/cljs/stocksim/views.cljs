@@ -3,17 +3,21 @@
             [stocksim.subs :as subs]
             [stocksim.events :as events]))
 
+(def <-sub (comp deref re-frame.core/subscribe vector))
+(def ->evt (comp re-frame.core/dispatch vector))
+
 (defn search []
-  (let [search @(rf/subscribe [::subs/search-symbol])]
+  (let [search (<-sub ::subs/search-symbol)]
     [:input {:type "text"
              :value search
              :auto-focus true
              :on-change
-             #(rf/dispatch [::events/search (-> % .-target .-value)])}]))
+             #(->evt ::events/search
+                     (-> % .-target .-value))}]))
 
 (defn msg []
-  (let [searching? @(rf/subscribe [::subs/searching?])
-        error      @(rf/subscribe [::subs/error])]
+  (let [searching? (<-sub ::subs/searching?)
+        error      (<-sub ::subs/error)]
     [:h4#msg
      (cond searching?
            "Searching..."

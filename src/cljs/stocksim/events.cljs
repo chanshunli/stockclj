@@ -7,6 +7,12 @@
             [stocksim.spec :as v]
             [clojure.string :as str]))
 
+(def ^:private cors-anywhere
+  "https://cors-anywhere.herokuapp.com/")
+
+(def ^:private quote-service
+  "http://data.benzinga.com/rest/richquoteDelayed?symbols=")
+
 (rf/reg-event-db
  ::initialize-db
  (fn  [_ _]
@@ -14,11 +20,12 @@
 
 (rf/reg-event-fx
  ::search
+ rf/trim-v
  (fn
-   [{db :db} [_ search]]
+   [{db :db} [search]]
    (let [search (str/upper-case search)]
      {:http-xhrio {:method          :get
-                   :uri             (str "https://cors-anywhere.herokuapp.com/http://data.benzinga.com/rest/richquoteDelayed?symbols=" search)
+                   :uri             (str cors-anywhere quote-service search)
                    :format          (ajax/json-request-format)
                    :response-format (ajax/json-response-format {:keywords? true})
                    :on-success      [:process-response]
@@ -30,8 +37,9 @@
 
 (rf/reg-event-db
  :process-response
+ rf/trim-v
  (fn
-   [db [_ {response (keyword (:search-symbol db))}]]
+   [db [{response (keyword (:search-symbol db))}]]
    (if (s/valid? ::v/quote response)
      (assoc db
             :error nil
@@ -45,7 +53,8 @@
 
 (rf/reg-event-db
  :bad-response
- (fn [db [_ response]]
+ rf/trim-v
+ (fn [db [response]]
    (assoc db
           :error (:last-error-code response)
           :quote nil
