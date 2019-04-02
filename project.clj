@@ -1,6 +1,6 @@
 (defproject stocksim "0.1.0-SNAPSHOT"
-  :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.9.908"]
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [org.clojure/clojurescript "1.10.520"]
                  [org.clojure/tools.nrepl "0.2.13"]
                  [reagent "0.7.0"]
                  [re-frame "0.10.5"]

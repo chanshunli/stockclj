@@ -5,12 +5,17 @@
             [stocksim.views :as views]
             [stocksim.config :as config]
             [stocksim.spec :as spec]
-            [com.rpl.specter :as s]))
+            [com.rpl.specter :as s]
+            [dirac.runtime]))
 
+(dirac.runtime/install!)
+
+(def testa 1111)
 
 (defn dev-setup []
   (when config/debug?
     (enable-console-print!)
+    (js-debugger)
     (println "dev mode")))
 
 (defn mount-root []
